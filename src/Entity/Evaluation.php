@@ -11,6 +11,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: EvaluationRepository::class)]
 class Evaluation
 {
+    // ... (Le début de la classe ne change pas : id, date, label, bareme, relations...)
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -40,118 +42,47 @@ class Evaluation
     #[ORM\OneToMany(mappedBy: 'evaluation', targetEntity: Grade::class, orphanRemoval: true)]
     private Collection $grades;
 
+    // --- CORRECTION ICI : date_affichage (au lieu de date_affiche) ---
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $date_affichage = null;
+
     public function __construct()
     {
         $this->grades = new ArrayCollection();
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getDate(): ?\DateTimeInterface
-    {
-        return $this->date;
-    }
-
-    public function setDate(\DateTimeInterface $date): static
-    {
-        $this->date = $date;
-
-        return $this;
-    }
-
-    public function getLabel(): ?string
-    {
-        return $this->label;
-    }
-
-    public function setLabel(string $label): static
-    {
-        $this->label = $label;
-
-        return $this;
-    }
-
-    public function getBareme(): ?int
-    {
-        return $this->bareme;
-    }
-
-    public function setBareme(int $bareme): static
-    {
-        $this->bareme = $bareme;
-
-        return $this;
-    }
-
-    public function getProfessor(): ?Professor
-    {
-        return $this->professor;
-    }
-
-    public function setProfessor(?Professor $professor): static
-    {
-        $this->professor = $professor;
-
-        return $this;
-    }
-
-    public function getSubject(): ?Subject
-    {
-        return $this->subject;
-    }
-
-    public function setSubject(?Subject $subject): static
-    {
-        $this->subject = $subject;
-
-        return $this;
-    }
-
-    public function getClassLevel(): ?ClassLevel
-    {
-        return $this->classLevel;
-    }
-
-    public function setClassLevel(?ClassLevel $classLevel): static
-    {
-        $this->classLevel = $classLevel;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Grade>
-     */
-    public function getGrades(): Collection
-    {
-        return $this->grades;
-    }
-
+    // ... (Gardez vos getters/setters pour id, date, label, bareme, professor, subject, classLevel, grades...)
+    public function getId(): ?int { return $this->id; }
+    public function getDate(): ?\DateTimeInterface { return $this->date; }
+    public function setDate(\DateTimeInterface $date): static { $this->date = $date; return $this; }
+    public function getLabel(): ?string { return $this->label; }
+    public function setLabel(string $label): static { $this->label = $label; return $this; }
+    public function getBareme(): ?int { return $this->bareme; }
+    public function setBareme(int $bareme): static { $this->bareme = $bareme; return $this; }
+    public function getProfessor(): ?Professor { return $this->professor; }
+    public function setProfessor(?Professor $professor): static { $this->professor = $professor; return $this; }
+    public function getSubject(): ?Subject { return $this->subject; }
+    public function setSubject(?Subject $subject): static { $this->subject = $subject; return $this; }
+    public function getClassLevel(): ?ClassLevel { return $this->classLevel; }
+    public function setClassLevel(?ClassLevel $classLevel): static { $this->classLevel = $classLevel; return $this; }
+    public function getGrades(): Collection { return $this->grades; }
     public function addGrade(Grade $grade): static
     {
         if (!$this->grades->contains($grade)) {
             $this->grades->add($grade);
             $grade->setEvaluation($this);
         }
-
         return $this;
     }
-
     public function removeGrade(Grade $grade): static
     {
         if ($this->grades->removeElement($grade)) {
-            // set the owning side to null (unless already changed)
             if ($grade->getEvaluation() === $this) {
                 $grade->setEvaluation(null);
             }
         }
-
         return $this;
     }
-
     public function getGradeByStudent(Student $student): ?Grade
     {
         foreach ($this->getGrades() as $grade){
@@ -160,5 +91,19 @@ class Evaluation
             }
         }
         return null;
+    }
+
+    // --- CORRECTION DES GETTERS/SETTERS ---
+
+    public function getDateAffichage(): ?\DateTimeInterface
+    {
+        return $this->date_affichage;
+    }
+
+    public function setDateAffichage(?\DateTimeInterface $date_affichage): static
+    {
+        $this->date_affichage = $date_affichage;
+
+        return $this;
     }
 }

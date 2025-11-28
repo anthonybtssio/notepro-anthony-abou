@@ -23,6 +23,8 @@ class EvaluationType extends AbstractType
         $eval = $options['data'];
         $prof = $eval->getProfessor();
 
+        // Ces variables ne semblent pas utilisées directement dans le builder ci-dessous,
+        // mais je les laisse telles quelles pour ne pas casser votre logique existante.
         $subjects = $prof->getSubjects();
         $classes = [];
         $classes = $prof->getClassLevels();
@@ -30,7 +32,15 @@ class EvaluationType extends AbstractType
         $builder
             ->add('date', DateType::class, [
                 'widget' => 'single_text',
+                'label' => 'Date de l\'évaluation', // J'ai ajouté un label pour la clarté (optionnel)
             ])
+            // --- DÉBUT MODIFICATION US 2 ---
+            ->add('date_affichage', DateType::class, [
+                'widget' => 'single_text',
+                'label' => 'Date d\'affichage des notes', // Libellé pour le prof
+                'required' => true, // Obligatoire pour contrôler la visibilité
+            ])
+            // --- FIN MODIFICATION US 2 ---
             ->add('label', TextType::class, [
                 'label' => 'Titre de l\'évaluation'
             ])
@@ -71,3 +81,4 @@ class EvaluationType extends AbstractType
         ]);
     }
 }
+
