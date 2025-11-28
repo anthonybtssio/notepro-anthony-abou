@@ -1,27 +1,44 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Student{% endblock %}
+{% block title %}Notes de {{ app.user.name }}{% endblock %}
 
 {% block body %}
     <h1>Notes de {{ app.user.name }}</h1>
 
-    <table class="table">
-        <thead>
-        <tr>
-            <th scope="col">Evaluation</th>
-            <th scope="col">Note</th>
-            <th scope="col">Barème</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for gr in student.grades %}
-        <tr>
-            <td>{{ gr.evaluation.label }}</td>
-            <td>{{ gr.grade }}</td>
-            <td>{{ gr.evaluation.bareme }}</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    {% if gradesGroupedBySubject is empty %}
+        <p>Aucune note visible pour le moment (vérifiez la date d'affichage des évaluations).</p>
+    {% endif %}
+
+    {# Boucle sur les données regroupées par matière #}
+    {% for subjectLabel, data in gradesGroupedBySubject %}
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h2>{{ subjectLabel }} <span class="badge bg-light text-primary float-end">Moyenne: {{ data.average }}/20</span></h2>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col">Évaluation</th>
+                        <th scope="col">Note</th>
+                        <th scope="col">Barème</th>
+                        <th scope="col">Note/20</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {# Boucle sur les notes pour cette matière #}
+                    {% for grade in data.grades %}
+                        <tr>
+                            <td>{{ grade.evaluation.label }}</td>
+                            <td>{{ grade.grade }}</td>
+                            <td>{{ grade.evaluation.bareme }}</td>
+                            <td>{{ (grade.grade / grade.evaluation.bareme * 20)|round(2) }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endfor %}
 
 {% endblock %}

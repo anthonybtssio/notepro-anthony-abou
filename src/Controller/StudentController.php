@@ -105,11 +105,13 @@ class StudentController extends AbstractController
     #[Route('/{id}/notes', name: 'app_student_notes', methods: ['GET', 'POST'])]
     public function notes(Student $student, EntityManagerInterface $entityManager): Response
     {
+        // Appel de la nouvelle méthode pour regrouper les notes visibles par matière
+        $gradesGroupedBySubject = $student->getAveragesGroupedBySubject();
 
         return $this->render('student/mygrades.html.twig', [
             'student' => $student,
-            'grades' => $student->getGrades()
-
+            'gradesGroupedBySubject' => $gradesGroupedBySubject,
+            // 'grades' est retiré car on utilise gradesGroupedBySubject
         ]);
     }
 }
